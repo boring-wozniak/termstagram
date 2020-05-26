@@ -1,2 +1,8 @@
 # [Dark Background](Dark%20Background.md)
 # [Light Background](Light%20Background.md)
+# [Pastel (Dark Background)](Pastel%20(Dark%20Background).md)
+# [Smoooooth](Smoooooth.md)
+# [Solarized Dark](Solarized%20Dark.md)
+# [Solarized Light](Solarized%20Light.md)
+# [Tango Dark](Tango%20Dark.md)
+# [Tango Light](Tango%20Light.md)

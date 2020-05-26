@@ -79,14 +79,14 @@ close_window() {
 }
 
 readonly DEFAULT_COLOR_PRESETS=(
-  "Dark Background"
-  "Light Background"
+  # "Dark Background"
+  # "Light Background"
   "Pastel (Dark Background)"
   "Smoooooth"
   "Solarized Dark"
-  "Solarized Light"
+  # "Solarized Light"
   "Tango Dark"
-  "Tango Light"
+  # "Tango Light"
 )
 
 readonly ITERM2_CONFIG_PATH="${HOME}/Library/Preferences/com.googlecode.iterm2.plist"
@@ -132,8 +132,9 @@ readonly number_of_screenshots="$((number_of_color_presets * number_of_themes))"
 print "Going to create ${number_of_screenshots} 😎"
 
 list_color_presets() {
-  echo "Dark Background"
-  # echo "Light Background"
+  for preset in "${DEFAULT_COLOR_PRESETS[@]}"; do
+    echo "${preset}"
+  done
 }
 
 current_screenshot=0
