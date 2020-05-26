@@ -16,6 +16,6 @@ for color_preset_dir in images/*; do
         theme="$(basename "${screenshot}" .png)"
         echo "## \`ZSH_THEME=\"${theme}\"\`"
         echo "![Had to be an image :(]($(escape_url "${screenshot}"))"
-    done > "${color_preset}.md"
-    echo "# [${color_preset}]($(escape_url "${color_preset}.md"))" >> README.md
+    done > "pages/${color_preset}.md"
+    echo "# [${color_preset}]($(escape_url "pages/${color_preset}.md"))" >> README.md
 done
