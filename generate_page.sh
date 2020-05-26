@@ -9,6 +9,7 @@ escape_url() {
   echo "${image_path}"
 }
 
+rm README.md
 for color_preset_dir in images/*; do
     color_preset="$(basename "${color_preset_dir}")"
     for screenshot in "${color_preset_dir}"/*.png; do
