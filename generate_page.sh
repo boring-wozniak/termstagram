@@ -33,7 +33,7 @@ for color_preset_dir in images/*; do
         echo "# \`ZSH_THEME=\"${theme}\"\`"
         echo "![Had to be an image :(](/$(escape_url "${screenshot}"))"
     done > "${page_path}"
-    echo "### [${color_preset}]($(escape_url "/${page_path}"))" >> README.md
+    echo "* [${color_preset}]($(escape_url "/${page_path}"))" >> README.md
 done
 
 echo "## By theme" >> README.md
@@ -47,5 +47,5 @@ list_themes | while read -r theme_name; do
         echo "# ${color_preset}"
         echo "![Had to be an image :(](/$(escape_url "${screenshot}"))"
     done > "${page_path}"
-    echo "### [${theme_name}]($(escape_url "/${page_path}"))" >> README.md
+    echo "* [${theme_name}]($(escape_url "/${page_path}"))" >> README.md
 done
