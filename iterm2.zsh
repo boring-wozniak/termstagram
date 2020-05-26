@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-set -xueo pipefail
+set -ueo pipefail
 
 readonly DEFAULT_NUMBER_OF_COLUMNS=100
 readonly DEFAULT_NUMBER_OF_ROWS=20
@@ -8,10 +8,26 @@ readonly DEFAULT_NUMBER_OF_ROWS=20
 readonly NUMBER_OF_COLUMNS="${NUMBER_OF_COLUMNS:-"${DEFAULT_NUMBER_OF_COLUMNS}"}"
 readonly NUMBER_OF_ROWS="${NUMBER_OF_ROWS:-"${DEFAULT_NUMBER_OF_ROWS}"}"
 
+readonly ZSH="${HOME}/.antigen/bundles/robbyrussell/oh-my-zsh"
+readonly THEMES_DIR="${ZSH}/themes"
+readonly THEME_SUFFIX=".zsh-theme"
+
+to_theme_path() {
+  readonly theme_name="$1"
+  echo "${THEMES_DIR}/${theme_name}${THEME_SUFFIX}"
+}
+
+to_theme_name() {
+  readonly theme_path="$1"
+  basename "${theme_path}" "${THEME_SUFFIX}"
+}
+
 do_the_thing() {
-  readonly color_preset="$1"
-  shift
-  readonly commands=("$@")
+  readonly color_preset="$1"; shift
+  readonly theme_name="$1"; shift
+  readonly set_theme_command="source $(to_theme_path "${theme_name}") && clear"
+  readonly commands=("${set_theme_command}" "$@")
+  readonly window_name="boring-wozniak/termstagram        theme:'${theme_name}'  colors: '${color_preset}'"
 
   osascript - "${color_preset}" "${commands[@]}" <<EOF
 on run arguments
@@ -20,7 +36,7 @@ on run arguments
 
   set colorPreset to the first item in arguments
   set commands to the rest of arguments
-  
+
   tell application "iTerm"
     set theWindow to create window with default profile
     set theTab to the current tab of theWindow
@@ -29,12 +45,13 @@ on run arguments
     set color preset of theSession to colorPreset
     set columns of theSession to numberOfColumns
     set rows of theSession to numberOfRows
-    set name of theSession to colorPreset
 
     repeat with command in commands
       write theSession text command
       delay 0.5
     end repeat
+
+    set name of theSession to "${window_name}"
 
     return id of theWindow
   end tell
@@ -46,7 +63,7 @@ capture_window() {
   readonly window_id="$1"
   readonly output_path="${2:-""}"
 
-  local arguments=("-w" "-l" "${window_id}")
+  local arguments=("-o" "-r" "-w" "-l" "${window_id}")
   if [[ -z "${output_path}" ]]; then
     arguments+=("-P") # Show in Preview instead
   else
@@ -91,11 +108,45 @@ list_all_presets() {
   done
 }
 
-# TODO: Spin up all the windows first :)
-readonly IMAGES_DIR="${HOME}/Sources/no-good-name-yet/images/iterm2"
 
-list_all_presets | while read -r color_preset; do
-  window_id="$(do_the_thing "${color_preset}" "cd Sources/no-good-name-yet" "ll")"
-  capture_window "${window_id}" "${IMAGES_DIR}/${color_preset}.png"
-  close_window "${window_id}"
+list_all_themes() {
+  for theme_path in "${THEMES_DIR}/"*"${THEME_SUFFIX}"; do
+    basename "${theme_path}" "${THEME_SUFFIX}"
+  done
+}
+
+epoch_now() {
+  date +%s
+}
+
+# TODO: Spin up all the windows first :)
+readonly IMAGES_DIR="${HOME}/Temporary/termstagram/images"
+
+readonly number_of_color_presets="$(list_external_color_presets | wc -l)"
+print "Found ${number_of_color_presets} color presets"
+
+readonly number_of_themes="$(list_all_themes | wc -l)"
+print "Found ${number_of_themes} themes"
+
+readonly number_of_screenshots="$((number_of_color_presets * number_of_themes))"
+print "Going to create ${number_of_screenshots} 😎"
+
+list_color_presets() {
+  echo "Dark Background"
+  # echo "Light Background"
+}
+
+current_screenshot=0
+mkdir -p "${IMAGES_DIR}"
+list_color_presets | while read -r color_preset; do
+  mkdir -p "${IMAGES_DIR}/${color_preset}"
+  list_all_themes | while read -r theme_name; do
+    echo -n "Taking the screenshot #$((++current_screenshot))/${number_of_screenshots}..."
+    started_at="$(epoch_now)"
+    window_id="$(do_the_thing "${color_preset}" "${theme_name}" "cd Sources/termstagram" "ll")"
+    capture_window "${window_id}" "${IMAGES_DIR}/${color_preset}/${theme_name}.png"
+    close_window "${window_id}"
+    finished_at="$(epoch_now)"
+    echo "took $((finished_at - started_at))s"
+  done
 done

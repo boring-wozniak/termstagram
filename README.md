@@ -1,4 +1,2 @@
-# Previews
-## [Dark](/dark.md)
-## [Light](/light.md)
-## [iTerm2](/iterm2.md)
+[Dark Background](Dark%20Background.md)
+[Light Background](Light%20Background.md)
